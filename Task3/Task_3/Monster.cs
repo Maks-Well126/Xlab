@@ -1,69 +1,58 @@
-using System;
+#nullable disable
 
-namespace ValheimBattle
+namespace ValheimGame
 {
-    abstract class Monster
+   
+
+    public abstract class Monster
     {
         public string Name { get; set; }
         public string Type { get; protected set; }
         public int Health { get; protected set; }
-        public bool HasArmor { get; set; }
-        public bool IsInvisible { get; set; }
+        public bool IsFlying { get; protected set; }
+        public bool IsInvisible { get; protected set; }
+        public int Armor { get; protected set; }
 
-        public bool IsAlive => Health > 0;
-
-        protected Monster(string name, string type, int health)
+        protected Monster(string name, string type, int health, bool isFlying)
         {
             Name = string.IsNullOrWhiteSpace(name) ? "Безымянный" : name;
             Type = type;
             Health = health;
+            IsFlying = isFlying;
         }
 
         public abstract string Move();
+        public virtual double GetDamageMultiplier(WeaponType weapon) => 1.0;
 
-        public virtual void TakeDamage(int damage)
+        public void TakeDamage(int damage, WeaponType weapon)
         {
-            int originalDamage = damage;
-
-            if (HasArmor)
-            {
-                damage = (int)(damage * 0.7);
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine($"{Name} ({Type}) одет в броню! Урон снижен на 30%.");
-            }
+            double multiplier = GetDamageMultiplier(weapon);
+            int modifiedDamage = (int)(damage * multiplier) - Armor;
+            if (modifiedDamage < 0) modifiedDamage = 0;
 
             if (IsInvisible)
             {
-                Random rand = new Random();
-                if (rand.Next(0, 100) < 15)
+                Random rnd = new Random();
+                if (rnd.Next(0, 100) < 40)
                 {
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    Console.WriteLine($"{Name} ({Type}) использует невидимость и избегает урона!");
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine($"{Name} ({Type}) уклонился благодаря невидимости!");
                     Console.ResetColor();
                     return;
                 }
             }
 
-            Health -= damage;
-            if (Health < 0) Health = 0;
-
+            Health -= modifiedDamage;
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"{Name} ({Type}) получил {damage} урона (изначально {originalDamage}).");
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"Осталось {Health} HP.\n");
+            Console.WriteLine($"{Name} ({Type}) получил {modifiedDamage} урона! HP: {Health}");
             Console.ResetColor();
 
-            if (!IsAlive)
+            if (Health <= 0)
             {
-                Console.ForegroundColor = ConsoleColor.DarkRed;
-                Console.WriteLine($"{Name} ({Type}) погиб!\n");
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine($"{Name} ({Type}) погиб!");
                 Console.ResetColor();
             }
-        }
-
-        public override string ToString()
-        {
-            return $"{Type} \"{Name}\" | HP: {Health} | {(HasArmor ? "Броня" : "Нет брони")} | {(IsInvisible ? "Невидимость" : "Видимый")}";
         }
 
         public void Heal(int amount)
@@ -72,6 +61,33 @@ namespace ValheimBattle
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine($"{Name} ({Type}) восстановил {amount} HP! Теперь у него {Health} HP.\n");
             Console.ResetColor();
+        }
+
+        public void UpgradeMenu()
+        {
+            Console.WriteLine("\nВыберите улучшение:");
+            Console.WriteLine("1) +10 брони");
+            Console.WriteLine("2) Включить невидимость");
+            Console.WriteLine("3) +50 HP");
+            Console.WriteLine("4) Всё сразу (суперапгрейд)");
+            Console.Write("Ваш выбор: ");
+            string choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1": Armor += 10; break;
+                case "2": IsInvisible = true; break;
+                case "3": Heal(50); break;
+                case "4": Armor += 10; IsInvisible = true; Heal(50); break;
+                default: Console.WriteLine("Некорректный выбор!"); break;
+            }
+        }
+
+        public override string ToString()
+        {
+            string armorText = Armor > 0 ? $"Броня: {Armor}" : "Без брони";
+            string visibility = IsInvisible ? "Невидим" : "Видим";
+            return $"{Type} \"{Name}\" | HP: {Health} | {armorText} | {visibility}";
         }
     }
 }
