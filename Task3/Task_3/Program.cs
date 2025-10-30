@@ -31,7 +31,7 @@ namespace ConsoleValheim
                 Console.WriteLine("Введите 'q' для выхода");
                 Console.Write("\nВыбор: ");
 
-                input = Console.ReadLine();
+                input = Console.ReadLine()?.Trim().ToLower();
 
 
                 switch (input)
@@ -71,7 +71,7 @@ namespace ConsoleValheim
                         break;
                 }
             }
-            while (input?.Trim().ToLower() is not "q");
+            while (input is not "q");
         }
 
 
