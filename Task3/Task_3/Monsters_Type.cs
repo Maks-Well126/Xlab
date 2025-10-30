@@ -4,7 +4,7 @@ namespace ValheimGame
     {
         public Draugr(string name) : base(name, "Драугр", 120, false) { }
 
-        public override string Move() => "Драугр медленно шагает по болотам";
+        public override string Move() => "Драугр медленно шагает по темному лесу";
 
         public override double GetDamageMultiplier(WeaponType weapon)
         {

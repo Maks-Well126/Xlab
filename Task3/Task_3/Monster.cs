@@ -12,6 +12,7 @@ namespace ValheimGame
         public bool IsFlying { get; protected set; }
         public bool IsInvisible { get; protected set; }
         public int Armor { get; protected set; }
+        public bool IsAlive => Health > 0;
 
         protected Monster(string name, string type, int health, bool isFlying)
         {
@@ -33,7 +34,7 @@ namespace ValheimGame
             if (IsInvisible)
             {
                 Random rnd = new Random();
-                if (rnd.Next(0, 100) < 40)
+                if (rnd.Next(0, 100) < 15)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine($"{Name} ({Type}) уклонился благодаря невидимости!");
@@ -75,10 +76,10 @@ namespace ValheimGame
 
             switch (choice)
             {
-                case "1": Armor += 10; break;
+                case "1": Armor += 30; break;
                 case "2": IsInvisible = true; break;
                 case "3": Heal(50); break;
-                case "4": Armor += 10; IsInvisible = true; Heal(50); break;
+                case "4": Armor += 30; IsInvisible = true; Heal(50); break;
                 default: Console.WriteLine("Некорректный выбор!"); break;
             }
         }

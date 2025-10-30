@@ -153,6 +153,9 @@ namespace ConsoleValheim
                 Console.ResetColor();
 
                 target.TakeDamage(finalDamage, weapon);
+                if (!target.IsAlive)
+                    monsters.RemoveAt(id);
+                
             }
             else
                 Console.WriteLine("Некорректный ID!");
@@ -183,6 +186,8 @@ namespace ConsoleValheim
             Console.ResetColor();
 
             target.TakeDamage(finalDamage, weapon);
+            if (!target.IsAlive)
+                monsters.RemoveAt(index);
         }
 
         static void UpgradeMonster(List<Monster> monsters)
