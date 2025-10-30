@@ -1,5 +1,5 @@
 ﻿#nullable disable
-using ValheimGame; // подключаем классы монстров и оружие
+using ValheimGame; 
 
 namespace ConsoleValheim
 {
@@ -105,7 +105,7 @@ namespace ConsoleValheim
 
         static void AddMonster(List<Monster> monsters, string type)
         {
-            Console.Write("Введите имя монстра (enter оставить пустым): ");
+            Console.Write("Введите имя монстра (Enter оставить пустым): ");
             string nameInput = Console.ReadLine();
             string name = string.IsNullOrWhiteSpace(nameInput) ? "Безымянный" : nameInput;
 

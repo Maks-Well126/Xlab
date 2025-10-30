@@ -27,9 +27,7 @@ namespace ValheimGame
 
         public void TakeDamage(int damage, WeaponType weapon)
         {
-            double multiplier = GetDamageMultiplier(weapon);
-            int modifiedDamage = (int)(damage * multiplier) - Armor;
-            if (modifiedDamage < 0) modifiedDamage = 0;
+            int modifiedDamage = damage;
 
             if (IsInvisible)
             {
@@ -43,9 +41,39 @@ namespace ValheimGame
                 }
             }
 
-            Health -= modifiedDamage;
+            int damageToArmor = 0;
+            int damageToHealth = 0;
+
+            if (Armor > 0)
+            {
+                if (modifiedDamage <= Armor)
+                {
+                    damageToArmor = modifiedDamage;
+                    Armor -= modifiedDamage;
+                    modifiedDamage = 0;
+                }
+                else
+                {
+                    damageToArmor = Armor; 
+                    damageToHealth = modifiedDamage - Armor;
+                    Armor = 0;
+                    Health -= damageToHealth;
+                }
+            }
+            else
+            {
+                damageToHealth = modifiedDamage; 
+                Health -= damageToHealth;
+            }
+
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"{Name} ({Type}) получил {modifiedDamage} урона! HP: {Health}");
+            Console.WriteLine($"\n{Type} \"{Name}\" получил урон!");
+            if (damageToArmor > 0)
+                Console.WriteLine($"Броня поглотила {damageToArmor} урона. Осталось брони: {Armor}");
+            if (damageToHealth > 0)
+                Console.WriteLine($"По здоровью нанесено {damageToHealth} урона. Осталось HP: {Health}");
+            if (Armor == 0 && damageToArmor > 0)
+                Console.WriteLine("Броня разрушена!");
             Console.ResetColor();
 
             if (Health <= 0)
@@ -67,7 +95,7 @@ namespace ValheimGame
         public void UpgradeMenu()
         {
             Console.WriteLine("\nВыберите улучшение:");
-            Console.WriteLine("1) +10 брони");
+            Console.WriteLine("1) +30 брони");
             Console.WriteLine("2) Включить невидимость");
             Console.WriteLine("3) +50 HP");
             Console.WriteLine("4) Всё сразу (суперапгрейд)");
